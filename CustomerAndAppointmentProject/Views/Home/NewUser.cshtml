@@ -6,19 +6,23 @@
 
 <br>
 <h1>New User</h1>
+<br />
 
 
 <form asp-action="NewUser">
     <div class="row mb-3">
-        <label class="col-sm-3 col-form-label">First Name</label>
+        <label class="col-sm-3 col-form-label">Full Name</label>
         <div class="col-sm-6">
-            <input type="text" asp-for="Firstname" class="form-control" name="Firstname">
+            <input type="text" asp-for="Fullname" class="form-control" name="Fullname">
         </div>
     </div>
     <div class="row mb-3">
-        <label class="col-sm-3 col-form-label">Last Name</label>
+        <label class="col-sm-3 col-form-label">Type of User</label>
         <div class="col-sm-6">
-            <input type="text" asp-for="Lastname" class="form-control" name="Lastname">
+            <select type="text" asp-for="TypeOfUser" class="form-control" name="TypeOfUser">
+                <option value="patient">Patient</option>
+                <option value="admin">Admin</option>
+            </select>
         </div>
     </div>
     <div class="row mb-3">

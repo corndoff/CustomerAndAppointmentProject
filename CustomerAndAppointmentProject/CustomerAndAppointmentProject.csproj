@@ -7,13 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.13" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
+    <Compile Remove="Views\Shared\Images\**" />
+    <Content Remove="Views\Shared\Images\**" />
+    <EmbeddedResource Remove="Views\Shared\Images\**" />
+    <None Remove="Views\Shared\Images\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Shared\Images\" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.13" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
   </ItemGroup>
 
 </Project>

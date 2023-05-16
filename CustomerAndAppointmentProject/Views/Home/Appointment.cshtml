@@ -1,15 +1,15 @@
-﻿@model CustomerAndAppointmentProject.Models.UserEntity
+﻿@model CustomerAndAppointmentProject.Models.AppointmentEntity
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "New Appointment";
 }
 
-<h1>Edit User</h1>
-
+<h1>New Appointment</h1>
+<br />
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Appointment">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Fullname" class="control-label"></label>
@@ -22,25 +22,23 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
+                <label asp-for="ApointmenetDate" class="control-label"></label>
+                <input asp-for="ApointmenetDate" class="form-control" value="@DateTime.Today.ToString("dd-MM-yyyy")/>
+                <span asp-validation-for="ApointmenetDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Created" class="control-label"></label>
-                <input type="text" asp-for="Created" value="@Model.Created.ToString()" disabled="disabled" class="form-control" />
-                <span asp-validation-for="Created" class="text-danger"></span>
+            <div class="form-group" >
+                <label asp-for="Notes"  class="control-label"></label>
+                <input asp-for="Notes" class="form-control"/>
+                <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-success " />
-                <a class="btn btn-primary" asp-action="Users">Back to List</a>
-
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a class="btn btn-danger" href="/" role="button">Cancel</a>
             </div>
         </form>
     </div>
 </div>
-
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

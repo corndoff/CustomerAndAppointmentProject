@@ -38,18 +38,37 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-                HttpResponseMessage getData = await client.GetAsync("users");
-
-                if (getData.IsSuccessStatusCode)
+                if (StaticVariables.StaticVariables.LoggedInAs == "ADMIN")
                 {
-                    string results = getData.Content.ReadAsStringAsync().Result;
-                    users = JsonConvert.DeserializeObject<List<UserEntity>>(results);
+                    HttpResponseMessage getData = await client.GetAsync("users");
+
+                    if (getData.IsSuccessStatusCode)
+                    {
+                        string results = getData.Content.ReadAsStringAsync().Result;
+                        users = JsonConvert.DeserializeObject<List<UserEntity>>(results);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error calling Web API");
+                    }
+                    ViewData.Model = users;
                 }
                 else
                 {
-                    Console.WriteLine("Error calling Web API");
+                    HttpResponseMessage getData = await client.GetAsync("users/1");
+
+                    if (getData.IsSuccessStatusCode)
+                    {
+                        string results = getData.Content.ReadAsStringAsync().Result;
+                        //users = new List<UserEntity> { JsonConvert.DeserializeObject<UserEntity>(results) };
+                        users = JsonConvert.DeserializeObject<List<UserEntity>>(results);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error calling Web API");
+                    }
+                    ViewData.Model = users;
                 }
-                ViewData.Model = users;
             }
             catch (Exception)
             {
@@ -58,6 +77,93 @@ namespace CustomerAndAppointmentProject.Controllers
             }
 
             return View(users);
+        }
+
+        public IActionResult Logout()
+        {
+            StaticVariables.StaticVariables.LoggedIn = false;
+            StaticVariables.StaticVariables.User = new UserLoginEntity();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Login()
+        {
+            ViewData.Model = new UserLoginEntity();
+            return View(new UserLoginEntity());
+        }
+
+        [HttpPost]
+        public IActionResult Login(UserLoginEntity entity)
+        {
+            StaticVariables.StaticVariables.LoggedIn = true;
+            if (entity.Email.Contains("doctorsofamerica.com"))
+            {
+                StaticVariables.StaticVariables.LoggedInAs = "admin".ToUpper();
+            }
+            else
+            {
+                StaticVariables.StaticVariables.LoggedInAs = "patient".ToUpper();
+            }
+            StaticVariables.StaticVariables.User = entity;
+            //StaticVariables.StaticVariables.User = //get UserEntity from api using entity credentials and set the global user to it
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Appointment()
+        {
+            return View(new AppointmentEntity());
+        }
+
+        [HttpPost]
+        public IActionResult Appointment(AppointmentEntity appointment)
+        {
+            string data = JsonConvert.SerializeObject(appointment);
+            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+            try
+            {
+                HttpResponseMessage response = client.PostAsync($"{client.BaseAddress}appointments/post", content).Result;
+                // Need to add a api call appointments/post so need a new controller on backend
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Appointments");
+                }
+            }
+            catch (Exception)
+            {
+
+                return View();
+            }
+            return View(appointment);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Appointments()
+        {
+            IList<AppointmentEntity> appointments = new List<AppointmentEntity>();
+
+            try
+            {
+                HttpResponseMessage getData = await client.GetAsync("appointments");
+
+                if (getData.IsSuccessStatusCode)
+                {
+                    string results = getData.Content.ReadAsStringAsync().Result;
+                    appointments = JsonConvert.DeserializeObject<List<AppointmentEntity>>(results);
+                }
+                else
+                {
+                    Console.WriteLine("Error calling Web API");
+                }
+                ViewData.Model = appointments;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return View(appointments);
         }
 
         public IActionResult NewUser()

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<CustomerAndAppointmentProject.Models.UserEntity>
 
 @{
-    ViewData["Title"] = "Users";
+    ViewData["Title"] = "Patients";
 }
 
 <h1>Users</h1>
@@ -10,10 +10,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Firstname)
+                @Html.DisplayNameFor(model => model.Fullname)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Lastname)
+                @Html.DisplayNameFor(model => model.TypeOfUser)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Email)
@@ -31,10 +31,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Firstname)
+                @Html.DisplayFor(modelItem => item.Fullname)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Lastname)
+                @Html.DisplayFor(modelItem => item.TypeOfUser)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Email)
