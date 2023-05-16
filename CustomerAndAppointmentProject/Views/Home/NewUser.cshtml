@@ -1,0 +1,48 @@
+﻿
+@model CustomerAndAppointmentProject.Models.UserEntity
+@{
+    //ViewData["Title"] = "New User";
+}
+
+<br>
+<h1>New User</h1>
+
+
+<form asp-action="NewUser">
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">First Name</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Firstname" class="form-control" name="Firstname">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Last Name</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Lastname" class="form-control" name="Lastname">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Email</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Email" class="form-control" name="email" >
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Address</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Address" class="form-control" name="address" >
+        </div>
+    </div>
+
+
+  
+
+    <div class="row mb-3">
+        <div class="offset-sm-3 col-sm-3 d-grid">
+            <button type="submit" value="Users"  class="btn btn-primary">Submit</button>
+        </div>
+        <div class="col-sm-3 d-grid">
+            <a class="btn btn-outline-primary" href="/" role="button">Cancel</a>
+        </div>
+    </div>
+</form>

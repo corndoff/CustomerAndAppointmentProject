@@ -1,0 +1,44 @@
+﻿@using System.Data
+@model IEnumerable<UserEntity>
+
+@{
+    ViewData["Title"] = "Customers";
+    
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table">
+    <thread>
+        <tr>
+            <th>@Html.DisplayName("First Name")</th>
+            <th>@Html.DisplayName("Last Name")</th>
+            <th>@Html.DisplayName("Email")</th>
+            <th>@Html.DisplayName("Address")</th>
+            <th>@Html.DisplayName("Date Created")</th>
+        </tr>
+    </thread>
+    <tbody>
+
+        @foreach (UserEntity row in Model)
+        {
+            <tr>
+                <td>@row.Firstname</td>
+                <td>@row.Lastname</td>
+                <td>@row.Email</td>
+                <td>@row.Address</td>
+                <td>@row.Created</td>
+                <td>
+                    <!--<a href=@Url.Action("Index", "HomeController", new { id = row.Id })>
+                        <a class="btn btn-primary btn-sm">Edit</a>
+                    </a>
+                    <a href=@Url.Action("Delete", "HomeController", new { id = row.Id })>
+                        <a class="btn btn-primary btn-sm">Delete</a>
+                    </a>-->
+                    <!--<a class="btn btn-primary btn-sm" href="/Views/Home/Edit?id=@row.Id">Edit</a>-->
+                    <!--<a class="btn btn-danger btn-sm" href="/Views/Home/Delete?id=@row.Id">Delete</a>-->
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
