@@ -14,7 +14,7 @@ namespace CustomerAndAppointmentProject.Controllers
         string BASEURL = "https://2117-2603-9001-3f00-2ac4-597d-c83c-7c35-59f3.ngrok-free.app/";
 
         HttpClient client = new HttpClient();
-        
+        DateTime UsersCreatedDate = DateTime.MinValue;
 
 
 
@@ -26,7 +26,7 @@ namespace CustomerAndAppointmentProject.Controllers
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
            
             return View();
@@ -34,7 +34,7 @@ namespace CustomerAndAppointmentProject.Controllers
 
         public async Task<IActionResult> Users()
         {
-            IList<UserEntity> users = new List<UserEntity>();
+            IList<UserEntity>? users = new List<UserEntity>();
 
             try
             {
@@ -121,7 +121,7 @@ namespace CustomerAndAppointmentProject.Controllers
             StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
             try
             {
-                HttpResponseMessage response = client.PostAsync($"{client.BaseAddress}appointments/post", content).Result;
+                HttpResponseMessage response = client.PostAsync($"{client.BaseAddress}appointment/post", content).Result;
                 // Need to add a api call appointments/post so need a new controller on backend
 
                 if (response.IsSuccessStatusCode)
@@ -140,11 +140,11 @@ namespace CustomerAndAppointmentProject.Controllers
         [HttpGet]
         public async Task<IActionResult> Appointments()
         {
-            IList<AppointmentEntity> appointments = new List<AppointmentEntity>();
+            IList<AppointmentEntity>? appointments = new List<AppointmentEntity>();
 
             try
             {
-                HttpResponseMessage getData = await client.GetAsync("appointments");
+                HttpResponseMessage getData = await client.GetAsync("appointment");
 
                 if (getData.IsSuccessStatusCode)
                 {
@@ -198,14 +198,14 @@ namespace CustomerAndAppointmentProject.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            UserEntity user = new UserEntity();
+            UserEntity? user = new UserEntity();
             HttpResponseMessage response = client.GetAsync(client.BaseAddress + "users/" + id).Result;
 
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 user = JsonConvert.DeserializeObject<UserEntity>(data);
-                DateTime created = user.Created;
+                StaticVariables.StaticVariables.Created = user.Created;
             }
             return View(user);
         }
@@ -213,6 +213,10 @@ namespace CustomerAndAppointmentProject.Controllers
         [HttpPost]
         public IActionResult Edit(UserEntity user)
         {
+            if(StaticVariables.StaticVariables.Created != DateTime.MinValue && user.Created != StaticVariables.StaticVariables.Created)
+            {
+                user.Created = StaticVariables.StaticVariables.Created;
+            }
             string data = JsonConvert.SerializeObject(user);
             StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
 
@@ -236,7 +240,7 @@ namespace CustomerAndAppointmentProject.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            UserEntity user = new UserEntity();
+            UserEntity? user = new UserEntity();
             HttpResponseMessage response = client.GetAsync(client.BaseAddress + "users/" + id).Result;
 
             if (response.IsSuccessStatusCode)

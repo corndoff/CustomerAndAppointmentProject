@@ -6,11 +6,11 @@ namespace CustomerAndAppointmentProject.Models
     {
         public int Id { get; set; }
         [DisplayName("Full Name")]
-        public string Fullname { get; set; }
-        public string Email { get; set; }
+        public string? Fullname { get; set; }
+        public string? Email { get; set; }
         [DisplayName("Appointment Date")]
-        public DateTime ApointmenetDate { get; set; }
+        public DateTime AppointmentDate { get; set; }
         [DisplayName("Notes for Doctor")]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
     }
 }

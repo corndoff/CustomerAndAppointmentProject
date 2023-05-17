@@ -7,7 +7,45 @@
 <h1>New Appointment</h1>
 <br />
 <hr />
-<div class="row">
+<form asp-action="Appointment">
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Full Name</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Fullname" class="form-control" name="Fullname">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Email</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Email" class="form-control" name="Email">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Date of Appointment</label>
+        <div class="col-sm-6">
+            <input asp-for="AppointmentDate" class="form-control" value="@DateTime.Today.ToString("dd-MM-yyyy")" name="AppointmentDate" >
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Notes For Doctor</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Notes" class="form-control" name="Notes" >
+        </div>
+    </div>
+
+
+  
+
+    <div class="row mb-3">
+        <div class="offset-sm-3 col-sm-3 d-grid">
+            <button type="submit" value="Users"  class="btn btn-primary">Submit</button>
+        </div>
+        <div class="col-sm-3 d-grid">
+            <a class="btn btn-outline-primary" href="/" role="button">Cancel</a>
+        </div>
+    </div>
+</form>
+<!--<div class="row">
     <div class="col-md-4">
         <form asp-action="Appointment">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -38,7 +76,7 @@
             </div>
         </form>
     </div>
-</div>
+</div>-->
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
