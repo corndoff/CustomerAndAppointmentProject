@@ -41,10 +41,10 @@
                 @Html.DisplayFor(modelItem => item.Notes)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", 
+                    @Html.ActionLink("Edit", "EditAppointment",
                 new { id=item.Id },
                 new { @class = "btn btn-primary btn-sm" })
-                @Html.ActionLink("Delete", "Delete", 
+                @Html.ActionLink("Delete", "DeleteAppointment", 
                 new { id=item.Id },
                 new { @class = " btn btn-danger btn-sm"})
             </td>

@@ -117,6 +117,7 @@ namespace CustomerAndAppointmentProject.Controllers
         [HttpPost]
         public IActionResult Appointment(AppointmentEntity appointment)
         {
+            appointment.AppointmentDate = new DateTime(appointment.AppointmentDate.Ticks, DateTimeKind.Local);
             string data = JsonConvert.SerializeObject(appointment);
             StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
             try
@@ -193,6 +194,82 @@ namespace CustomerAndAppointmentProject.Controllers
                 return View();  
             }
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult EditAppointment(int id)
+        {
+            AppointmentEntity appointment = new AppointmentEntity();
+            HttpResponseMessage response = client.GetAsync($"{client.BaseAddress}appointment/{id}").Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                appointment = JsonConvert.DeserializeObject<AppointmentEntity>(data);
+                //StaticVariables.StaticVariables.Created = appointment.;
+            }
+            return View(appointment);
+        }
+
+        [HttpPost]
+        public IActionResult EditAppointment(AppointmentEntity appointment)
+        {
+            //if (StaticVariables.StaticVariables.Created != DateTime.MinValue && user.Created != StaticVariables.StaticVariables.Created)
+            //{
+            //    user.Created = StaticVariables.StaticVariables.Created;
+            //}
+            string data = JsonConvert.SerializeObject(appointment);
+            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+
+            try
+            {
+                HttpResponseMessage response = client.PutAsync(client.BaseAddress + "appointment/" + appointment.Id, content).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Appointments");
+                }
+
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Appointments");
+            }
+            return RedirectToAction("Appointments");
+        }
+
+        [HttpGet]
+        public IActionResult DeleteAppointment(int id)
+        {
+            AppointmentEntity? appointment = new AppointmentEntity();
+            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "appointment/" + id).Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                appointment = JsonConvert.DeserializeObject<AppointmentEntity>(data);
+            }
+            return View(appointment);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteAppointmentConfirm(int id)
+        {
+
+            try
+            {
+                HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "appointment/" + id).Result;
+                if (response.IsSuccessStatusCode)
+                {
+
+                    return RedirectToAction("Appointments");
+                }
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Appointments");
+            }
+            return RedirectToAction("Appointments");
         }
 
         [HttpGet]
