@@ -44,10 +44,10 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Appointment">New Appointment</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Appointments">Appointments</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="PatientAppointments">Appointments</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="NewUser">Your Profile</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="User">Your Profile</a>
                             </li>
                         }
                     </ul>
@@ -61,7 +61,7 @@
                             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                                 <ul class="navbar-nav flex-grow-1">
                                     <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="NewUser">Register</a>
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Register">Register</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
@@ -80,7 +80,7 @@
                             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                                 <ul class="navbar-nav flex-grow-1">
                                     <li class="nav-item">
-                                        <a>Hello @StaticVariables.User.Email</a>
+                                        <a>Hello @StaticVariables.User.Fullname</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>

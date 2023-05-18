@@ -1,5 +1,5 @@
 ﻿@model CustomerAndAppointmentProject.Models.AppointmentEntity
-
+@using CustomerAndAppointmentProject.StaticVariables
 @{
     ViewData["Title"] = "New Appointment";
 }
@@ -49,16 +49,31 @@
     <div class="col-md-4">
         <form asp-action="Appointment">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Fullname" class="control-label"></label>
-                <input asp-for="Fullname" class="form-control" />
-                <span asp-validation-for="Fullname" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
+            @if (StaticVariables.User.TypeOfUser.ToLower() == "admin") {
+                <div class="form-group">
+                    <label asp-for="Fullname" class="control-label"></label>
+                    <input asp-for="Fullname" class="form-control" />
+                    <span asp-validation-for="Fullname" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="Fullname" class="control-label"></label>
+                    <input disabled="disabled" asp-for="Fullname" class="form-control" value="@StaticVariables.User.Fullname" />
+                    <span asp-validation-for="Fullname" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                <input disabled="disabled" asp-for="Email" class="form-control" value="@StaticVariables.User.Email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            }
             <div class="form-group">
                 <label asp-for="AppointmentDate" class="control-label"></label>
                 <input asp-for="AppointmentDate" class="form-control" value="@DateTime.Today.ToString("dd-MM-yyyy")/>

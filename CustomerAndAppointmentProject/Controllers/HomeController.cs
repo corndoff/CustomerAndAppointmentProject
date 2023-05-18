@@ -9,15 +9,17 @@ namespace CustomerAndAppointmentProject.Controllers
 {
     public class HomeController : Controller
     {
+        #region Variables
         private readonly ILogger<HomeController> _logger;
 
-        string BASEURL = "https://2117-2603-9001-3f00-2ac4-597d-c83c-7c35-59f3.ngrok-free.app/";
+        //string BASEURL = "https://2117-2603-9001-3f00-2ac4-597d-c83c-7c35-59f3.ngrok-free.app/";
+        string BASEURL = "http://localhost:10888";
 
         HttpClient client = new HttpClient();
         DateTime UsersCreatedDate = DateTime.MinValue;
+        #endregion
 
-
-
+        #region Ctor
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -25,11 +27,34 @@ namespace CustomerAndAppointmentProject.Controllers
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
+        #endregion
 
+        #region Index
         public IActionResult Index()
         {
            
             return View();
+        }
+        #endregion
+
+        #region Users
+        public async Task<IActionResult> User()
+        {
+            UserEntity user = new UserEntity();
+
+            try
+            {
+
+                HttpResponseMessage getData = await client.GetAsync("users/" + StaticVariables.StaticVariables.User.Id.ToString());
+                if (getData.IsSuccessStatusCode)
+                {
+                    string results = getData.Content.ReadAsStringAsync().Result;
+                    user = JsonConvert.DeserializeObject<UserEntity>(results);
+                }
+            }
+            catch(Exception ex) { 
+            }
+            return View(user);
         }
 
         public async Task<IActionResult> Users()
@@ -38,7 +63,7 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-                if (StaticVariables.StaticVariables.LoggedInAs == "ADMIN")
+                if (StaticVariables.StaticVariables.LoggedInAs.ToLower() == "admin")
                 {
                     HttpResponseMessage getData = await client.GetAsync("users");
 
@@ -79,10 +104,79 @@ namespace CustomerAndAppointmentProject.Controllers
             return View(users);
         }
 
+        public IActionResult Register()
+        {
+            ViewData.Model = new UserEntity();
+            return View(new UserEntity());
+        }
+
+        [HttpPost]
+        public IActionResult Register(UserEntity user)
+        {
+            user.Created = DateTime.Now;
+            if (user.TypeOfUser.ToLower() == "admin" && !user.Email.ToLower().Contains("doctorsofamerica"))
+            {
+                return View();
+            }
+            string data = JsonConvert.SerializeObject(user);
+            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+            try
+            {
+                HttpResponseMessage response = client.PostAsync($"{client.BaseAddress}users/post", content).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    StaticVariables.StaticVariables.LoggedIn = true;
+                    StaticVariables.StaticVariables.LoggedInAs = user.TypeOfUser;
+                    StaticVariables.StaticVariables.User = user;
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception)
+            {
+
+                return View();
+            }
+            return View();
+        }
+
+        public IActionResult NewUser()
+        {
+            ViewData.Model = new UserEntity();
+            return View(new UserEntity());
+        }
+
+        [HttpPost]
+        public IActionResult NewUser(UserEntity user)
+        {
+            user.Created = DateTime.Now;
+            if (user.TypeOfUser.ToLower() == "admin" && !user.Email.ToLower().Contains("doctorsofamerica"))
+            {
+                return View();
+            }
+            string data = JsonConvert.SerializeObject(user);
+            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+            try
+            {
+                HttpResponseMessage response = client.PostAsync($"{client.BaseAddress}users/post", content).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Users");
+                }
+            }
+            catch (Exception)
+            {
+
+                return View();
+            }
+            return View();
+        }
+
         public IActionResult Logout()
         {
             StaticVariables.StaticVariables.LoggedIn = false;
-            StaticVariables.StaticVariables.User = new UserLoginEntity();
+            StaticVariables.StaticVariables.User = new UserEntity();
             return RedirectToAction("Index");
         }
 
@@ -93,21 +187,112 @@ namespace CustomerAndAppointmentProject.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(UserLoginEntity entity)
+        public async Task<IActionResult> Login(UserLoginEntity entity)
         {
-            StaticVariables.StaticVariables.LoggedIn = true;
-            if (entity.Email.Contains("doctorsofamerica.com"))
+            try
             {
-                StaticVariables.StaticVariables.LoggedInAs = "admin".ToUpper();
+                HttpResponseMessage getData = await client.GetAsync(client.BaseAddress + "users/by/" + entity.Email);
+
+                if (getData.IsSuccessStatusCode)
+                {
+                    string results = getData.Content.ReadAsStringAsync().Result;
+                    StaticVariables.StaticVariables.User = JsonConvert.DeserializeObject<UserEntity>(results);
+
+                    StaticVariables.StaticVariables.LoggedIn = true;
+                    StaticVariables.StaticVariables.LoggedInAs = StaticVariables.StaticVariables.User.TypeOfUser;
+                }
+                else
+                {
+                    Console.WriteLine("Error calling Web API");
+                }
             }
-            else
+            catch (Exception)
             {
-                StaticVariables.StaticVariables.LoggedInAs = "patient".ToUpper();
+
+                throw;
             }
-            StaticVariables.StaticVariables.User = entity;
-            //StaticVariables.StaticVariables.User = //get UserEntity from api using entity credentials and set the global user to it
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            UserEntity? user = new UserEntity();
+            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "users/" + id).Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                user = JsonConvert.DeserializeObject<UserEntity>(data);
+                StaticVariables.StaticVariables.Created = user.Created;
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(UserEntity user)
+        {
+            if (StaticVariables.StaticVariables.Created != DateTime.MinValue && user.Created != StaticVariables.StaticVariables.Created)
+            {
+                user.Created = StaticVariables.StaticVariables.Created;
+            }
+            string data = JsonConvert.SerializeObject(user);
+            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+
+            try
+            {
+                HttpResponseMessage response = client.PutAsync(client.BaseAddress + "users/" + user.Id, content).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Users");
+                }
+
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Users");
+            }
+            return RedirectToAction("Users");
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            UserEntity? user = new UserEntity();
+            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "users/" + id).Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                user = JsonConvert.DeserializeObject<UserEntity>(data);
+            }
+            return View(user);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
+        {
+
+            try
+            {
+                HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "users/" + id).Result;
+                if (response.IsSuccessStatusCode)
+                {
+
+                    return RedirectToAction("Users");
+                }
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Users");
+            }
+            return RedirectToAction("Users");
+        }
+
+        #endregion
+
+        #region Appointments
 
         public IActionResult Appointment()
         {
@@ -139,6 +324,35 @@ namespace CustomerAndAppointmentProject.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> PatientAppointments(string email)
+        {
+            IList<AppointmentEntity>? appointments = new List<AppointmentEntity>();
+
+            try
+            {
+                HttpResponseMessage getData = await client.GetAsync(client.BaseAddress + "appointment/by/" + StaticVariables.StaticVariables.User.Email.ToLower());
+
+                if (getData.IsSuccessStatusCode)
+                {
+                    string results = getData.Content.ReadAsStringAsync().Result;
+                    appointments = JsonConvert.DeserializeObject<List<AppointmentEntity>>(results);
+                }
+                else
+                {
+                    Console.WriteLine("Error calling Web API");
+                }
+                ViewData.Model = appointments;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return View(appointments);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Appointments()
         {
             IList<AppointmentEntity>? appointments = new List<AppointmentEntity>();
@@ -165,35 +379,6 @@ namespace CustomerAndAppointmentProject.Controllers
             }
 
             return View(appointments);
-        }
-
-        public IActionResult NewUser()
-        {
-            ViewData.Model = new UserEntity();
-            return View(new UserEntity());
-        }
-
-        [HttpPost]
-        public IActionResult NewUser(UserEntity user)
-        {
-            user.Created = DateTime.Now;
-            string data = JsonConvert.SerializeObject(user);
-            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-            try
-            {
-                HttpResponseMessage response = client.PostAsync($"{client.BaseAddress}users/post", content).Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Users");
-                }
-            }
-            catch (Exception)
-            {
-
-                return View();  
-            }
-            return View();
         }
 
         [HttpGet]
@@ -252,13 +437,13 @@ namespace CustomerAndAppointmentProject.Controllers
             return View(appointment);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("DeleteAppointment")]
         public IActionResult DeleteAppointmentConfirm(int id)
         {
 
             try
             {
-                HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "appointment/" + id).Result;
+                HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "appointment/delete/" + id).Result;
                 if (response.IsSuccessStatusCode)
                 {
 
@@ -272,88 +457,15 @@ namespace CustomerAndAppointmentProject.Controllers
             return RedirectToAction("Appointments");
         }
 
-        [HttpGet]
-        public IActionResult Edit(int id)
-        {
-            UserEntity? user = new UserEntity();
-            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "users/" + id).Result;
+        #endregion
 
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                user = JsonConvert.DeserializeObject<UserEntity>(data);
-                StaticVariables.StaticVariables.Created = user.Created;
-            }
-            return View(user);
-        }
-
-        [HttpPost]
-        public IActionResult Edit(UserEntity user)
-        {
-            if(StaticVariables.StaticVariables.Created != DateTime.MinValue && user.Created != StaticVariables.StaticVariables.Created)
-            {
-                user.Created = StaticVariables.StaticVariables.Created;
-            }
-            string data = JsonConvert.SerializeObject(user);
-            StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-
-            try
-            {
-                HttpResponseMessage response = client.PutAsync(client.BaseAddress + "users/" + user.Id, content).Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Users");
-                }
-
-            }
-            catch (Exception)
-            {
-                    return RedirectToAction("Users");
-            }
-            return RedirectToAction("Users");
-        }
-
-        [HttpGet]
-        public IActionResult Delete(int id)
-        {
-            UserEntity? user = new UserEntity();
-            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "users/" + id).Result;
-
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                user = JsonConvert.DeserializeObject<UserEntity>(data);
-            }
-            return View(user);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
-        {
-
-            try
-            {
-                HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "users/" + id).Result;
-                if (response.IsSuccessStatusCode)
-                {
-
-                    return RedirectToAction("Users");
-                }
-            }
-            catch(Exception)
-            {
-                return RedirectToAction("Users");
-            }
-            return RedirectToAction("Users");
-        }
-
+        #region ErrorModel
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        
+        #endregion
     }
 }

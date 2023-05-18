@@ -1,0 +1,56 @@
+﻿@model CustomerAndAppointmentProject.Models.UserEntity
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Register</h1>
+
+<br />
+
+
+<form asp-action="Register">
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Full Name</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Fullname" class="form-control" name="Fullname">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Type of User</label>
+        <div class="col-sm-6">
+            <select type="text" asp-for="TypeOfUser" class="form-control" name="TypeOfUser">
+                <option value="patient">Patient</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Email</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Email" class="form-control" name="email" >
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label">Address</label>
+        <div class="col-sm-6">
+            <input type="text" asp-for="Address" class="form-control" name="address" >
+        </div>
+    </div>
+
+
+  
+
+    <div class="row mb-3">
+        <div class="offset-sm-3 col-sm-3 d-grid">
+            <button type="submit" value="Users"  class="btn btn-primary">Submit</button>
+        </div>
+        <div class="col-sm-3 d-grid">
+            <a class="btn btn-outline-primary" href="/" role="button">Cancel</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

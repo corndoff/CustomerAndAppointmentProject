@@ -8,7 +8,7 @@ namespace CustomerAndAppointmentProject.StaticVariables
 
         public static string? LoggedInAs;
 
-        public static UserLoginEntity? User;
+        public static UserEntity User;
 
         public static DateTime Created = DateTime.MinValue;
     }

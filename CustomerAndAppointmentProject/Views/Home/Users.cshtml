@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<CustomerAndAppointmentProject.Models.UserEntity>
+@using CustomerAndAppointmentProject.StaticVariables
 
 @{
     ViewData["Title"] = "Patients";
@@ -49,9 +50,12 @@
                 @Html.ActionLink("Edit", "Edit", 
                 new { id=item.Id },
                 new { @class = "btn btn-primary btn-sm" })
+                @if(item.Id != StaticVariables.User.Id)
+                {   
                 @Html.ActionLink("Delete", "Delete", 
                 new { id=item.Id },
                 new { @class = " btn btn-danger btn-sm"})
+            }
             </td>
         </tr>
 }
