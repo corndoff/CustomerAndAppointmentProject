@@ -12,8 +12,8 @@ namespace CustomerAndAppointmentProject.Controllers
         #region Variables
         private readonly ILogger<HomeController> _logger;
 
-        //string BASEURL = "https://2117-2603-9001-3f00-2ac4-597d-c83c-7c35-59f3.ngrok-free.app/";
-        string BASEURL = "http://localhost:10888";
+        string BASEURL = "https://6506-2603-9001-3f00-2ac4-77ac-a753-ae0d-f488.ngrok-free.app/";
+        //string BASEURL = "http://localhost:10888";
 
         HttpClient client = new HttpClient();
         DateTime UsersCreatedDate = DateTime.MinValue;
@@ -32,7 +32,25 @@ namespace CustomerAndAppointmentProject.Controllers
         #region Index
         public IActionResult Index()
         {
-           
+           if(!string.IsNullOrEmpty(HttpContext.Session.GetString("Current User")))
+            {
+                if(JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+                {
+                    var user = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                    ViewData["loggedIn"] = true;
+                    ViewData["userName"] = user.Fullname;
+                    if (user.Email.ToLower().Contains("doctorsofamerica"))
+                    {
+                        ViewData["admin"] = true;
+                    }
+                    else
+                    {
+                        ViewData["admin"] = false;
+                    }
+                    return View();
+                }
+            }
+            ViewData["loggedIn"] = false;
             return View();
         }
         #endregion
@@ -126,9 +144,10 @@ namespace CustomerAndAppointmentProject.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    StaticVariables.StaticVariables.LoggedIn = true;
-                    StaticVariables.StaticVariables.LoggedInAs = user.TypeOfUser;
-                    StaticVariables.StaticVariables.User = user;
+                    //StaticVariables.StaticVariables.LoggedIn = true;
+                    //StaticVariables.StaticVariables.LoggedInAs = user.TypeOfUser;
+                    //StaticVariables.StaticVariables.User = user;
+                    HttpContext.Session.SetString("Current User", JsonConvert.SerializeObject(user));
                     return RedirectToAction("Index");
                 }
             }
@@ -175,8 +194,16 @@ namespace CustomerAndAppointmentProject.Controllers
 
         public IActionResult Logout()
         {
-            StaticVariables.StaticVariables.LoggedIn = false;
-            StaticVariables.StaticVariables.User = new UserEntity();
+            //StaticVariables.StaticVariables.LoggedIn = false;
+            //StaticVariables.StaticVariables.User = new UserEntity();
+            HttpContext.Session.Clear();
+            if(!string.IsNullOrEmpty(HttpContext.Session.GetString("Current User")))
+            {
+                if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+                {
+                    var user = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                }
+            }
             return RedirectToAction("Index");
         }
 
@@ -196,10 +223,11 @@ namespace CustomerAndAppointmentProject.Controllers
                 if (getData.IsSuccessStatusCode)
                 {
                     string results = getData.Content.ReadAsStringAsync().Result;
-                    StaticVariables.StaticVariables.User = JsonConvert.DeserializeObject<UserEntity>(results);
+                    HttpContext.Session.SetString("Current User", JsonConvert.SerializeObject(JsonConvert.DeserializeObject<UserEntity>(results)));
+                    //StaticVariables.StaticVariables.User = JsonConvert.DeserializeObject<UserEntity>(results);
 
-                    StaticVariables.StaticVariables.LoggedIn = true;
-                    StaticVariables.StaticVariables.LoggedInAs = StaticVariables.StaticVariables.User.TypeOfUser;
+                    //StaticVariables.StaticVariables.LoggedIn = true;
+                    //StaticVariables.StaticVariables.LoggedInAs = StaticVariables.StaticVariables.User.TypeOfUser;
                 }
                 else
                 {

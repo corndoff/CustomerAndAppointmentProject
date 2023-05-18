@@ -1,4 +1,22 @@
 ﻿@using CustomerAndAppointmentProject.StaticVariables
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    bool loggedIn = false;
+    bool admin = false;
+    string userName = "";
+    if (ViewData["loggedIn"] != null)
+    {
+        loggedIn = (bool)ViewData["loggedIn"];
+    }
+    if(ViewData["admin"] != null)
+    {
+        admin = (bool)ViewData["admin"];
+    }
+    if (ViewData["userName"] != null)
+    {
+        userName = (string)ViewData["userName"];
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +41,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @if (StaticVariables.LoggedIn && StaticVariables.User != null && StaticVariables.User.Email.Contains("doctorsofamerica.com"))
+                        @if (loggedIn && admin)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Users">Users</a>
@@ -38,7 +56,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Appointments">Appointments</a>
                             </li>
                         }
-                        else if (StaticVariables.LoggedIn)
+                        else if (loggedIn)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Appointment">New Appointment</a>
@@ -53,7 +71,7 @@
                     </ul>
                 </div>
             </div>
-            @if (!StaticVariables.LoggedIn)
+            @if (!loggedIn)
             {
                 <div id="right">
                     <div class="pull-right">
@@ -80,7 +98,7 @@
                             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                                 <ul class="navbar-nav flex-grow-1">
                                     <li class="nav-item">
-                                        <a>Hello @StaticVariables.User.Fullname</a>
+                                        <a>Hello @userName</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
