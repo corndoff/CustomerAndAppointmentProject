@@ -3,6 +3,11 @@
 
 @{
     ViewData["Title"] = "Patients";
+    int id = 0;
+    if(ViewData["id"] != null)
+    {
+        id = (int)ViewData["id"];
+    }
 }
 
 <h1>Users</h1>
@@ -50,7 +55,7 @@
                 @Html.ActionLink("Edit", "Edit", 
                 new { id=item.Id },
                 new { @class = "btn btn-primary btn-sm" })
-                @if(item.Id != StaticVariables.User.Id)
+                @if(item.Id != id)
                 {   
                 @Html.ActionLink("Delete", "Delete", 
                 new { id=item.Id },

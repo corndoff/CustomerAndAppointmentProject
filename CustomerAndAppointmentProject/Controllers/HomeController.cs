@@ -12,8 +12,8 @@ namespace CustomerAndAppointmentProject.Controllers
         #region Variables
         private readonly ILogger<HomeController> _logger;
 
-        string BASEURL = "https://6506-2603-9001-3f00-2ac4-77ac-a753-ae0d-f488.ngrok-free.app/";
-        //string BASEURL = "http://localhost:10888";
+        //string BASEURL = "https://6506-2603-9001-3f00-2ac4-77ac-a753-ae0d-f488.ngrok-free.app/";
+        string BASEURL = "http://localhost:10888";
 
         HttpClient client = new HttpClient();
         DateTime UsersCreatedDate = DateTime.MinValue;
@@ -62,8 +62,7 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-
-                HttpResponseMessage getData = await client.GetAsync("users/" + StaticVariables.StaticVariables.User.Id.ToString());
+                HttpResponseMessage getData = await client.GetAsync("users/" + JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).Id);//StaticVariables.StaticVariables.User.Id.ToString());
                 if (getData.IsSuccessStatusCode)
                 {
                     string results = getData.Content.ReadAsStringAsync().Result;
@@ -71,6 +70,21 @@ namespace CustomerAndAppointmentProject.Controllers
                 }
             }
             catch(Exception ex) { 
+            }
+
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
             }
             return View(user);
         }
@@ -81,7 +95,7 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-                if (StaticVariables.StaticVariables.LoggedInAs.ToLower() == "admin")
+                if (/*StaticVariables.StaticVariables.LoggedInAs*/JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).TypeOfUser.ToLower() == "admin")
                 {
                     HttpResponseMessage getData = await client.GetAsync("users");
 
@@ -119,12 +133,42 @@ namespace CustomerAndAppointmentProject.Controllers
                 throw;
             }
 
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+                ViewData["id"] = globalUser.Id;
+            }
             return View(users);
         }
 
         public IActionResult Register()
         {
             ViewData.Model = new UserEntity();
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+                ViewData["id"] = globalUser.Id;
+            }
             return View(new UserEntity());
         }
 
@@ -156,12 +200,42 @@ namespace CustomerAndAppointmentProject.Controllers
 
                 return View();
             }
+
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             return View();
         }
 
         public IActionResult NewUser()
         {
             ViewData.Model = new UserEntity();
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+                ViewData["id"] = globalUser.Id;
+            }
             return View(new UserEntity());
         }
 
@@ -169,6 +243,22 @@ namespace CustomerAndAppointmentProject.Controllers
         public IActionResult NewUser(UserEntity user)
         {
             user.Created = DateTime.Now;
+            user.Created = new DateTime(DateTime.Now.Ticks, DateTimeKind.Local);
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
+
             if (user.TypeOfUser.ToLower() == "admin" && !user.Email.ToLower().Contains("doctorsofamerica"))
             {
                 return View();
@@ -210,6 +300,24 @@ namespace CustomerAndAppointmentProject.Controllers
         public IActionResult Login()
         {
             ViewData.Model = new UserLoginEntity();
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("Current User")))
+            {
+                if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+                {
+                    var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                    ViewData["loggedIn"] = true;
+                    ViewData["userName"] = globalUser.Fullname;
+                    if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                    {
+                        ViewData["admin"] = true;
+                    }
+                    else
+                    {
+                        ViewData["admin"] = false;
+                    }
+                    ViewData["id"] = globalUser.Id;
+                }
+            }
             return View(new UserLoginEntity());
         }
 
@@ -239,6 +347,21 @@ namespace CustomerAndAppointmentProject.Controllers
 
                 throw;
             }
+
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             return RedirectToAction("Index");
         }
 
@@ -252,7 +375,22 @@ namespace CustomerAndAppointmentProject.Controllers
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 user = JsonConvert.DeserializeObject<UserEntity>(data);
-                StaticVariables.StaticVariables.Created = user.Created;
+                //StaticVariables.StaticVariables.Created = user.Created;
+            }
+
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
             }
             return View(user);
         }
@@ -260,9 +398,24 @@ namespace CustomerAndAppointmentProject.Controllers
         [HttpPost]
         public IActionResult Edit(UserEntity user)
         {
-            if (StaticVariables.StaticVariables.Created != DateTime.MinValue && user.Created != StaticVariables.StaticVariables.Created)
+            //if (StaticVariables.StaticVariables.Created != DateTime.MinValue && user.Created != StaticVariables.StaticVariables.Created)
+            //{
+            //    user.Created = StaticVariables.StaticVariables.Created;
+            //}
+
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
             {
-                user.Created = StaticVariables.StaticVariables.Created;
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
             }
             string data = JsonConvert.SerializeObject(user);
             StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
@@ -295,13 +448,41 @@ namespace CustomerAndAppointmentProject.Controllers
                 string data = response.Content.ReadAsStringAsync().Result;
                 user = JsonConvert.DeserializeObject<UserEntity>(data);
             }
+
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             return View(user);
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             try
             {
                 HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "users/" + id).Result;
@@ -324,19 +505,55 @@ namespace CustomerAndAppointmentProject.Controllers
 
         public IActionResult Appointment()
         {
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+                ViewData["fullName"] = globalUser.Fullname;
+                ViewData["email"] = globalUser.Email;
+            }
             return View(new AppointmentEntity());
         }
 
         [HttpPost]
         public IActionResult Appointment(AppointmentEntity appointment)
         {
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+                ViewData["fullName"] = globalUser.Fullname;
+                ViewData["email"] = globalUser.Email;
+                if(globalUser.TypeOfUser.ToLower() != "admin")
+                {
+                    appointment.Email = globalUser.Email.ToLower();
+                    appointment.Fullname = globalUser.Fullname;
+                }
+            }
             appointment.AppointmentDate = new DateTime(appointment.AppointmentDate.Ticks, DateTimeKind.Local);
             string data = JsonConvert.SerializeObject(appointment);
             StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
             try
             {
                 HttpResponseMessage response = client.PostAsync($"{client.BaseAddress}appointment/post", content).Result;
-                // Need to add a api call appointments/post so need a new controller on backend
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -358,7 +575,7 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-                HttpResponseMessage getData = await client.GetAsync(client.BaseAddress + "appointment/by/" + StaticVariables.StaticVariables.User.Email.ToLower());
+                HttpResponseMessage getData = await client.GetAsync(client.BaseAddress + "appointment/by/" + JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).Id);//StaticVariables.StaticVariables.User.Email.ToLower());
 
                 if (getData.IsSuccessStatusCode)
                 {
@@ -377,6 +594,20 @@ namespace CustomerAndAppointmentProject.Controllers
                 throw;
             }
 
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             return View(appointments);
         }
 
@@ -406,6 +637,20 @@ namespace CustomerAndAppointmentProject.Controllers
                 throw;
             }
 
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             return View(appointments);
         }
 
@@ -421,6 +666,21 @@ namespace CustomerAndAppointmentProject.Controllers
                 appointment = JsonConvert.DeserializeObject<AppointmentEntity>(data);
                 //StaticVariables.StaticVariables.Created = appointment.;
             }
+
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             return View(appointment);
         }
 
@@ -431,6 +691,21 @@ namespace CustomerAndAppointmentProject.Controllers
             //{
             //    user.Created = StaticVariables.StaticVariables.Created;
             //}
+
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             string data = JsonConvert.SerializeObject(appointment);
             StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
 
@@ -462,13 +737,41 @@ namespace CustomerAndAppointmentProject.Controllers
                 string data = response.Content.ReadAsStringAsync().Result;
                 appointment = JsonConvert.DeserializeObject<AppointmentEntity>(data);
             }
+
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             return View(appointment);
         }
 
         [HttpPost, ActionName("DeleteAppointment")]
         public IActionResult DeleteAppointmentConfirm(int id)
         {
-
+            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
+            {
+                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                ViewData["loggedIn"] = true;
+                ViewData["userName"] = globalUser.Fullname;
+                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
+                {
+                    ViewData["admin"] = true;
+                }
+                else
+                {
+                    ViewData["admin"] = false;
+                }
+            }
             try
             {
                 HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "appointment/delete/" + id).Result;

@@ -2,6 +2,11 @@
 @using CustomerAndAppointmentProject.StaticVariables
 @{
     ViewData["Title"] = "Edit";
+    bool admin = false;
+    if(ViewData["admin"] != null)
+    {
+        admin = (bool)ViewData["admin"];
+    }
 }
 
 <h1>Edit User</h1>
@@ -26,7 +31,7 @@
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
-            @if (StaticVariables.User.TypeOfUser.ToLower() == "admin")
+            @if (admin)
             {
                 <div class="form-group">
                     <label asp-for="TypeOfUser" class="control-label"></label>

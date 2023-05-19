@@ -2,6 +2,21 @@
 @using CustomerAndAppointmentProject.StaticVariables
 @{
     ViewData["Title"] = "New Appointment";
+    bool admin = false;
+    string fullName = "";
+    string email = "";
+    if(ViewData["admin"] != null)
+    {
+        admin = (bool)ViewData["admin"];
+    }
+    if(ViewData["fullName"] != null)
+    {
+        fullName = (string)ViewData["fullName"];
+    }
+    if(ViewData["email"] != null)
+    {
+        email = (string)ViewData["email"];
+    }
 }
 
 <h1>New Appointment</h1>
@@ -49,7 +64,7 @@
     <div class="col-md-4">
         <form asp-action="Appointment">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @if (StaticVariables.User.TypeOfUser.ToLower() == "admin") {
+            @if (admin) {
                 <div class="form-group">
                     <label asp-for="Fullname" class="control-label"></label>
                     <input asp-for="Fullname" class="form-control" />
@@ -65,12 +80,12 @@
             {
                 <div class="form-group">
                     <label asp-for="Fullname" class="control-label"></label>
-                    <input disabled="disabled" asp-for="Fullname" class="form-control" value="@StaticVariables.User.Fullname" />
+                    <input disabled="disabled" asp-for="Fullname" class="form-control" value="@fullName" />
                     <span asp-validation-for="Fullname" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Email" class="control-label"></label>
-                <input disabled="disabled" asp-for="Email" class="form-control" value="@StaticVariables.User.Email" />
+                <input disabled="disabled" asp-for="Email" class="form-control" value="@email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
             }
