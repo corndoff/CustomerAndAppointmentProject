@@ -12,7 +12,10 @@
         <form asp-action="Login">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <div>
                 <label asp-for="Email" class="control-label"></label>
+                <img class="btn-sm" src="~/newSmallTooltip.png" data-toggle="tooltip" data-placement="right" title="To login as admin use doctorsofamerica.com in email"/>
+                </div>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>

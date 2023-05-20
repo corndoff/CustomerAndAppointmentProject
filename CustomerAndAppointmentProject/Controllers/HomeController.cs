@@ -527,6 +527,7 @@ namespace CustomerAndAppointmentProject.Controllers
         [HttpPost]
         public IActionResult Appointment(AppointmentEntity appointment)
         {
+            bool admin = false;
             if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
             {
                 var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
@@ -535,6 +536,7 @@ namespace CustomerAndAppointmentProject.Controllers
                 if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
                 {
                     ViewData["admin"] = true;
+                    admin = true;
                 }
                 else
                 {
@@ -557,7 +559,11 @@ namespace CustomerAndAppointmentProject.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction("Appointments");
+                    if (admin)
+                    {
+                        return RedirectToAction("Appointments");
+                    }
+                    return RedirectToAction("PatientAppointments");
                 }
             }
             catch (Exception)
@@ -575,7 +581,7 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-                HttpResponseMessage getData = await client.GetAsync(client.BaseAddress + "appointment/by/" + JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).Id);//StaticVariables.StaticVariables.User.Email.ToLower());
+                HttpResponseMessage getData = await client.GetAsync(client.BaseAddress + "appointment/by/" + JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).Email);//StaticVariables.StaticVariables.User.Email.ToLower());
 
                 if (getData.IsSuccessStatusCode)
                 {
