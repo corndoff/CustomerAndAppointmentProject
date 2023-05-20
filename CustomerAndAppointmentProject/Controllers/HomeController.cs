@@ -16,7 +16,6 @@ namespace CustomerAndAppointmentProject.Controllers
         //string BASEURL = "http://localhost:10888";
 
         HttpClient client = new HttpClient();
-        DateTime UsersCreatedDate = DateTime.MinValue;
         #endregion
 
         #region Ctor
