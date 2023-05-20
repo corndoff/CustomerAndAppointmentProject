@@ -12,8 +12,8 @@ namespace CustomerAndAppointmentProject.Controllers
         #region Variables
         private readonly ILogger<HomeController> _logger;
 
-        //string BASEURL = "https://6506-2603-9001-3f00-2ac4-77ac-a753-ae0d-f488.ngrok-free.app/";
-        string BASEURL = "http://localhost:10888";
+        string BASEURL = "https://06b7-2603-9001-3f00-2ac4-77ac-a753-ae0d-f488.ngrok-free.app/";
+        //string BASEURL = "http://localhost:10888";
 
         HttpClient client = new HttpClient();
         DateTime UsersCreatedDate = DateTime.MinValue;
@@ -339,7 +339,7 @@ namespace CustomerAndAppointmentProject.Controllers
                 }
                 else
                 {
-                    Console.WriteLine("Error calling Web API");
+                    return View();
                 }
             }
             catch (Exception)
