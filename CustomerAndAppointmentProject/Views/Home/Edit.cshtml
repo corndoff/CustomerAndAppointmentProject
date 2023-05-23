@@ -40,18 +40,41 @@
                 <option value="admin">Admin</option>
             </select>
                 <span asp-validation-for="TypeOfUser" class="text-danger"></span>
-            </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="TypeOfUser" class="control-label"></label>
+                    <input type="text" readonly="readonly" asp-for="TypeOfUser" class="form-control" name="TypeOfUser" />
+                    <span asp-validation-for="TypeOfUser" class="text-danger"></span>
+                </div>
             }
             <div class="form-group">
                 <label asp-for="Created" class="control-label"></label>
-                <input type="text" asp-for="Created" value="@Model.Created.ToString()" disabled="disabled" class="form-control" />
+                <input type="text" asp-for="Created" value="@Model.Created.ToString()" readonly="readonly" class="form-control" />
                 <span asp-validation-for="Created" class="text-danger"></span>
             </div>
             <br />
-            <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+            @if (admin)
+            {
+                <!--<a class="btn btn-primary btn-sm" asp-action="Appointments">Back to List</a>-->
+                @Html.ActionLink("Back to List", "Users",
+            new { @class = "btn btn-primary btn-sm" })
+            }
+            else
+            {
+                <!--<a class="btn btn-primary btn-sm" asp-action="PatientAppointments">Back to List</a>
+                -->
+                @Html.ActionLink("Back to Profile", "User",
+            new { email=Model.Email },
+            new { @class = "btn btn-primary btn-sm" })
+            }
+            <!--<div class="form-group">
                 <input type="submit" value="Save" class="btn btn-success " />
                 <a class="btn btn-primary" asp-action="Users">Back to List</a>
-            </div>
+            </div>-->
         </form>
     </div>
 </div>

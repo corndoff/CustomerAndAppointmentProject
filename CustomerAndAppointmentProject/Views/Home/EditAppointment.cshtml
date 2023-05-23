@@ -1,6 +1,11 @@
 ﻿@model CustomerAndAppointmentProject.Models.AppointmentEntity
 
 @{
+    bool admin = false;
+    if (ViewData["admin"] != null)
+    {
+        admin = (bool)ViewData["admin"];
+    }
     ViewData["Title"] = "EditAppointment";
 }
 
@@ -11,21 +16,32 @@
     <div class="col-md-4">
         <form asp-action="EditAppointment">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Fullname" class="control-label"></label>
-                <input asp-for="Fullname" class="form-control" />
-                <span asp-validation-for="Fullname" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
+            @if (admin)
+            {
+                <div class="form-group">
+                    <label asp-for="Fullname" class="control-label"></label>
+                    <input asp-for="Fullname" class="form-control" />
+                    <span asp-validation-for="Fullname" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="Fullname" class="control-label"></label>
+                    <input asp-for="Fullname" class="form-control" readonly="readonly" />
+                    <span asp-validation-for="Fullname" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" readonly="readonly" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            }
             <div class="form-group">
                 <label asp-for="AppointmentDate" class="control-label"></label>
                 <input asp-for="AppointmentDate" class="form-control" />
@@ -36,10 +52,24 @@
                 <input asp-for="Notes" class="form-control" />
                 <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a class="btn btn-primary" asp-action="Users">Back to List</a>
-            </div>
+            <br />
+            <form asp-action="EditAppointment">
+                <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+                @if (admin)
+                {
+                    <!--<a class="btn btn-primary btn-sm" asp-action="Appointments">Back to List</a>-->
+                    @Html.ActionLink("Back to List", "Appointments",
+                new { @class = "btn btn-primary btn-sm" })
+                }
+                else
+                {
+                    <!--<a class="btn btn-primary btn-sm" asp-action="PatientAppointments">Back to List</a>
+                    -->
+                    @Html.ActionLink("Back to List", "PatientAppointments",
+                new { email=Model.Email },
+                new { @class = "btn btn-primary btn-sm" })
+                }
+            </form>
         </form>
     </div>
 </div>

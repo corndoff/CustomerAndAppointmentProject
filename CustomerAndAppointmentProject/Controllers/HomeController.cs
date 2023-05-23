@@ -386,11 +386,6 @@ namespace CustomerAndAppointmentProject.Controllers
         [HttpPost]
         public IActionResult Edit(UserEntity user)
         {
-            //if (StaticVariables.StaticVariables.Created != DateTime.MinValue && user.Created != StaticVariables.StaticVariables.Created)
-            //{
-            //    user.Created = StaticVariables.StaticVariables.Created;
-            //}
-
             if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
             {
                 var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
@@ -412,9 +407,18 @@ namespace CustomerAndAppointmentProject.Controllers
             {
                 HttpResponseMessage response = client.PutAsync(client.BaseAddress + "users/" + user.Id, content).Result;
 
+                //if (response.IsSuccessStatusCode)
+                //{
+                //    return RedirectToAction("Users");
+                //}
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction("Users");
+                    if (ViewData["admin"] != null && (bool)ViewData["admin"])
+                    {
+                        return RedirectToAction("Users");
+                    }
+                    return RedirectToAction("User");
+                    //return RedirectToAction("Appointments");
                 }
 
             }
@@ -532,11 +536,6 @@ namespace CustomerAndAppointmentProject.Controllers
                 }
                 ViewData["fullName"] = globalUser.Fullname;
                 ViewData["email"] = globalUser.Email;
-                if(globalUser.TypeOfUser.ToLower() != "admin")
-                {
-                    appointment.Email = globalUser.Email.ToLower();
-                    appointment.Fullname = globalUser.Fullname;
-                }
             }
             appointment.AppointmentDate = new DateTime(appointment.AppointmentDate.Ticks, DateTimeKind.Local);
             string data = JsonConvert.SerializeObject(appointment);
@@ -681,11 +680,6 @@ namespace CustomerAndAppointmentProject.Controllers
         [HttpPost]
         public IActionResult EditAppointment(AppointmentEntity appointment)
         {
-            //if (StaticVariables.StaticVariables.Created != DateTime.MinValue && user.Created != StaticVariables.StaticVariables.Created)
-            //{
-            //    user.Created = StaticVariables.StaticVariables.Created;
-            //}
-
             if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
             {
                 var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
@@ -705,11 +699,16 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-                HttpResponseMessage response = client.PutAsync(client.BaseAddress + "appointment/" + appointment.Id, content).Result;
+                HttpResponseMessage response = client.PutAsync($"{client.BaseAddress}appointment/{appointment.Id}", content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction("Appointments");
+                    if (ViewData["admin"] != null && (bool)ViewData["admin"])
+                    {
+                        return RedirectToAction("Appointments");
+                    }
+                    return RedirectToAction("PatientAppointments");
+                    //return RedirectToAction("Appointments");
                 }
 
             }
@@ -771,8 +770,11 @@ namespace CustomerAndAppointmentProject.Controllers
                 HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "appointment/delete/" + id).Result;
                 if (response.IsSuccessStatusCode)
                 {
-
-                    return RedirectToAction("Appointments");
+                    if(ViewData["admin"] != null && (bool)ViewData["admin"])
+                    {
+                        return RedirectToAction("Appointments");
+                    }
+                    return RedirectToAction("PatientAppointments");
                 }
             }
             catch (Exception)

@@ -1,6 +1,11 @@
 ﻿@model CustomerAndAppointmentProject.Models.AppointmentEntity
 
 @{
+    bool admin = false;
+    if (ViewData["admin"] != null)
+    {
+        admin = (bool)ViewData["admin"];
+    }
     ViewData["Title"] = "DeleteAppointment";
 }
 
@@ -38,7 +43,21 @@
     </dl>
     
     <form asp-action="DeleteAppointment">
-        <input type="submit" value="Delete" class="btn btn-danger btn-sm" />
-        <a class="btn btn-primary btn-sm" asp-action="Index">Back to List</a>
+        <input type="submit" value="Delete Appointment" class="btn btn-danger btn-sm" />
+        @if (admin)
+        {
+            <!--<a class="btn btn-primary btn-sm" asp-action="Appointments">Back to List</a>-->
+            @Html.ActionLink("Back to List", "Appointments",
+        new { @class = "btn btn-primary btn-sm" })
+        }
+        else
+        {
+            <!--<a class="btn btn-primary btn-sm" asp-action="PatientAppointments">Back to List</a>
+            -->
+            
+            @Html.ActionLink("Back to List", "PatientAppointments",
+        new { email=Model.Email },
+        new { @class = "btn btn-primary btn-sm" })
+        }
     </form>
 </div>
