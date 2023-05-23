@@ -12,7 +12,8 @@ namespace CustomerAndAppointmentProject.Controllers
         #region Variables
         private readonly ILogger<HomeController> _logger;
 
-        string BASEURL = "https://06b7-2603-9001-3f00-2ac4-77ac-a753-ae0d-f488.ngrok-free.app/";
+        string BASEURL = "https://customerandappointmentrestfulapi.azurewebsites.net";
+        //string BASEURL = "https://06b7-2603-9001-3f00-2ac4-77ac-a753-ae0d-f488.ngrok-free.app/";
         //string BASEURL = "http://localhost:10888";
 
         HttpClient client = new HttpClient();
@@ -61,7 +62,10 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-                HttpResponseMessage getData = await client.GetAsync("users/" + JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).Id);//StaticVariables.StaticVariables.User.Id.ToString());
+                HttpResponseMessage getData = await client.GetAsync("users/by/" + JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).Email);//StaticVariables.StaticVariables.User.Id.ToString());
+                //user = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+
+
                 if (getData.IsSuccessStatusCode)
                 {
                     string results = getData.Content.ReadAsStringAsync().Result;
@@ -153,21 +157,6 @@ namespace CustomerAndAppointmentProject.Controllers
         public IActionResult Register()
         {
             ViewData.Model = new UserEntity();
-            if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")) != null)
-            {
-                var globalUser = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
-                ViewData["loggedIn"] = true;
-                ViewData["userName"] = globalUser.Fullname;
-                if (globalUser.Email.ToLower().Contains("doctorsofamerica"))
-                {
-                    ViewData["admin"] = true;
-                }
-                else
-                {
-                    ViewData["admin"] = false;
-                }
-                ViewData["id"] = globalUser.Id;
-            }
             return View(new UserEntity());
         }
 
