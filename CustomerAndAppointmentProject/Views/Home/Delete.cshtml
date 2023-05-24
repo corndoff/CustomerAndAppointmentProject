@@ -45,18 +45,15 @@
         <input type="submit" value="Delete" class="btn btn-danger btn-sm" /> 
         @if (admin)
         {
-            <!--<a class="btn btn-primary btn-sm" asp-action="Appointments">Back to List</a>-->
             @Html.ActionLink("Back to List", "Users",
+            new {},
         new { @class = "btn btn-primary btn-sm" })
         }
         else
         {
-            <!--<a class="btn btn-primary btn-sm" asp-action="PatientAppointments">Back to List</a>
-            -->
             @Html.ActionLink("Back to Profile", "User",
         new { email=Model.Email },
         new { @class = "btn btn-primary btn-sm" })
         }
-        <!--<a class="btn btn-primary btn-sm" asp-action="Users">Back to List</a>-->
     </form>
 </div>

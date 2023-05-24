@@ -62,8 +62,7 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-                HttpResponseMessage getData = await client.GetAsync("users/by/" + JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).Email);//StaticVariables.StaticVariables.User.Id.ToString());
-                //user = JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User"));
+                HttpResponseMessage getData = await client.GetAsync("users/by/" + JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).Email);
 
 
                 if (getData.IsSuccessStatusCode)
@@ -98,7 +97,7 @@ namespace CustomerAndAppointmentProject.Controllers
 
             try
             {
-                if (/*StaticVariables.StaticVariables.LoggedInAs*/JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).TypeOfUser.ToLower() == "admin")
+                if (JsonConvert.DeserializeObject<UserEntity>(HttpContext.Session.GetString("Current User")).TypeOfUser.ToLower() == "admin")
                 {
                     HttpResponseMessage getData = await client.GetAsync("users");
 
